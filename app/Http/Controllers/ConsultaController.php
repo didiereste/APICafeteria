@@ -34,9 +34,16 @@ class ConsultaController extends Controller
             $productomasstock = DB::table('productos')
                                     ->orderBy('stock', 'desc')
                                     ->first();
+            
 
-            // Responde con un mensaje de éxito y los detalles del producto con más stock.
+            // Verifica si hay un producto con stock
+            if ($productomasstock) {
+             // Responde con un mensaje de éxito y los detalles del producto con más stock.
             return ApiResponse::success('Producto con más stock obtenido correctamente', 200, $productomasstock);
+            } else {
+            // Responde con un mensaje indicando que no hay productos disponibles.
+            return ApiResponse::error('No hay productos disponibles', 404);
+            }
         }  catch(Exception $e){
             return ApiResponse::error('Error al obtener el producto con más stock', 500, $e->getMessage());
         }
@@ -59,9 +66,14 @@ class ConsultaController extends Controller
                                     ->groupBy('productos.id', 'productos.nombre_producto')
                                     ->orderByDesc('total_ventas')
                                     ->first();
-
-            // Responde con un mensaje de éxito y los detalles del producto más vendido.
-            return ApiResponse::success('Producto más vendido encontrado correctamente', 200, $productoMasVendido);
+            
+            if($productoMasVendido){
+             // Responde con un mensaje de éxito y los detalles del producto con más stock.
+             return ApiResponse::success('Producto con más stock obtenido correctamente', 200, $productoMasVendido);
+            } else {
+            // Responde con un mensaje indicando que no hay productos disponibles.
+            return ApiResponse::error('No hay productos disponibles', 404);
+            }
         }catch(Exception $e){
             return ApiResponse::error('Error al obtener el producto más vendido', 500, $e->getMessage()); 
         }

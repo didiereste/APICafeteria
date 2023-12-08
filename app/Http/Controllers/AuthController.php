@@ -32,18 +32,29 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function login()
-    {
-        // Extrae las credenciales del cuerpo de la solicitud.
+{
+    try {
+        // Validar las credenciales antes de intentar la autenticación
+        request()->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        // Extraer las credenciales del cuerpo de la solicitud.
         $credentials = request(['email', 'password']);
 
-        // Intenta autenticar al usuario y obtener un token.
+        // Intentar autenticar al usuario y obtener un token.
         if (!$token = auth()->attempt($credentials)) {
             return ApiResponse::error('Credenciales incorrectas', 401);
         }
 
-        // Responde con un mensaje de éxito y el token.
+        // Responder con un mensaje de éxito y el token.
         return ApiResponse::success('Inicio de sesión exitoso', 200, $token);
+    } catch ( ValidationException $e) {
+        $errors = $e->validator->errors()->toArray();
+        return ApiResponse::error('Error de validacion ', 500, $errors);
     }
+}
 
     /**
      * Obtiene el usuario autenticado.
